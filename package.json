@@ -1,0 +1,35 @@
+{
+  "name": "ganglion-impulse",
+  "version": "0.1.0",
+  "description": "A JavaScript library for registering fibers that transmit impulses from from a central ganglion triggering a chain of actions",
+  "main": "dist/ganglion.js",
+  "scripts": {
+    "build": "babel lib/ganglion.js --out-file dist/ganglion.js",
+    "pretest": "eslint .",
+    "test": "mocha --compilers js:babel/register test/**/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garth/ganglion-impulse.git"
+  },
+  "keywords": [
+    "central",
+    "messaging",
+    "action",
+    "ganglion",
+    "fiber",
+    "impulse"
+  ],
+  "author": "Garth Williams",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/garth/ganglion-impulse/issues"
+  },
+  "homepage": "https://github.com/garth/ganglion-impulse#readme",
+  "devDependencies": {
+    "babel": "^5.5.8",
+    "chai": "^3.0.0",
+    "eslint": "^0.23.0",
+    "mocha": "^2.2.5"
+  }
+}
