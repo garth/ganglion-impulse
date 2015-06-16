@@ -48,7 +48,7 @@ var Ganglion = function Ganglion() {
 
       return new Promise(function (resolve, reject) {
         // make some metadata available on the context
-        var impulseContext = Object.assign({}, self.context, { impulseName: name });
+        var impulseContext = Object.assign({}, self.context, { fiberName: name });
         // start the impulse
         callNextAction(actions, impulseContext, data, { resolve: resolve, reject: reject });
       });
