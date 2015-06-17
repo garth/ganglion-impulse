@@ -4,7 +4,7 @@ Ganglion Impulse
 > In anatomy, a [ganglion](https://en.wikipedia.org/wiki/Ganglion) (/ˈɡæŋɡliən/
 > gang-glee-ən; plural ganglia) is a nerve cell cluster.
 
-A JavaScript library for registering fibers that transmit impulses from a central ganglion
+A JavaScript library for registering fibers that transmit impulses from a central ganglion,
 triggering a chain of actions.
 
 Ganglion is heavily inspired by [Cerebral](https://github.com/christianalfoni/cerebral)

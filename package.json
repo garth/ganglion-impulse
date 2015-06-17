@@ -1,7 +1,7 @@
 {
   "name": "ganglion-impulse",
   "version": "0.3.0",
-  "description": "A JavaScript library that transmits impulses from a central ganglion calling chain of actions",
+  "description": "A JavaScript library that transmits impulses from a central ganglion, triggering chain of actions.",
   "main": "dist/ganglion.js",
   "scripts": {
     "build": "babel lib/ganglion.js --out-file dist/ganglion.js",
