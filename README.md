@@ -11,7 +11,7 @@ Ganglion is heavily inspired by [Cerebral](https://github.com/christianalfoni/ce
 but does not include a data store or any [React](http://facebook.github.io/react/) component
 integration as Cerebral does.
 
-Ganglion is small (~2k before minification) and it does not have any dependencies.
+Ganglion is small (< 1k minimised and gzipped) and it does not have any dependencies.
 
 Installation
 ------------
