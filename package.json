@@ -1,6 +1,6 @@
 {
   "name": "ganglion-impulse",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A JavaScript library for registering fibers that transmit impulses from from a central ganglion triggering a chain of actions",
   "main": "dist/ganglion.js",
   "scripts": {
