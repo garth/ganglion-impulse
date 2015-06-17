@@ -98,6 +98,8 @@ to the ganglion constructor are retained across all impulses.
 
 ### Hooks
 
+#### onBeforeImpulse / onAfterImpulse
+
 The optional onBeforeImpulse or onAfterImpulse hooks passed to the ganglion constructor will
 be called before and after every impulse emitted. Hooks have the same signature as actions, but
 the return value is discarded.
@@ -115,6 +117,30 @@ let nerveCentre = new Ganglion({
   }
 });
 ```
+
+#### onSlowAsyncActionStart / onSlowAsyncActionEnd
+
+The optional onSlowAsyncActionStart and onSlowAsyncActionEnd will be called when async actions
+take a while to complete.
+
+```JavaScript
+let slowActionHook = function (isStart) {
+  let status = isStart ? 'is running slow' : 'completed';
+  console.log(`${this.fiberName} async action ${status}`);
+};
+
+// create a new ganglion with onSlowAsyncActionStart and onSlowAsyncActionEnd hooks
+let nerveCentre = new Ganglion({
+  callSlowAsyncActionAfter: 500, // ms after which the
+                                 // onSlowAsyncActionStart will be called
+  onSlowAsyncActionStart: slowActionHook,
+  onSlowAsyncActionEnd: slowActionHook
+});
+```
+
+To ensure that the slow async action hooks are not called unnecessarily, `callSlowAsyncActionAfter`
+can be used to define after how many milliseconds should be hooks be called. By default this is
+set to 500ms.
 
 Contributing
 ------------
@@ -143,6 +169,10 @@ npm run build
 
 Changelog
 ---------
+
+### 0.3.0
+
+* Added onSlowAsyncActionStart and onSlowAsyncActionEnd hooks
 
 ### 0.2.0
 

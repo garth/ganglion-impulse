@@ -7,14 +7,23 @@ var arrayOrSingle = function arrayOrSingle(data) {
   return Array.isArray(data) && data.length === 1 ? data[0] : data;
 };
 
-var callNextAction = function callNextAction(actions, context, data, promise) {
+var callNextAction = function callNextAction(actions, context, data, options) {
   // if there are no more actions return the final action response to the impulse caller
   if (!actions.length) {
-    return promise.resolve(arrayOrSingle(data));
+    return options.resolve(arrayOrSingle(data));
   }
 
   // assume all actions are concurrent sets
   var actionSet = Array.isArray(actions[0]) ? actions[0] : [actions[0]];
+
+  // if async actions take longer than callSlowAsyncActionAfter ms, call the onSlowAsyncActionStart hook
+  var calledSlowAsyncAction = false;
+  var slowActionTimer = setTimeout(function () {
+    if (typeof options.onSlowAsyncActionStart === 'function') {
+      calledSlowAsyncAction = true;
+      options.onSlowAsyncActionStart.call(context, true);
+    }
+  }, options.callSlowAsyncActionAfter);
 
   // call all actions in the set
   Promise
@@ -22,19 +31,25 @@ var callNextAction = function callNextAction(actions, context, data, promise) {
   .all(actionSet.map(function (action) {
     return action.call(context, arrayOrSingle(data));
   }))
-  // all actions resolved, so call next
+  // all actions resolved
   .then(function (responses) {
-    callNextAction(actions.splice(1), context, responses, promise);
+    // if we called the onSlowAsyncActionStart hook call the onSlowAsyncActionEnd hook
+    clearTimeout(slowActionTimer);
+    if (calledSlowAsyncAction && typeof options.onSlowAsyncActionEnd === 'function') {
+      options.onSlowAsyncActionEnd.call(context, false);
+    }
+    // call the next action
+    callNextAction(actions.splice(1), context, responses, options);
   })
   // if one of the promises failed send propigate the failure
-  ['catch'](promise.reject);
+  ['catch'](options.reject);
 };
 
 var Ganglion = function Ganglion() {
   var options = arguments[0] === undefined ? {} : arguments[0];
 
   this.impulse = {};
-  this.options = Object.assign({ context: {} }, options);
+  this.options = Object.assign({ context: {}, callSlowAsyncActionAfter: 500 }, options);
   var self = this;
 
   this.fiber = function (name) {
@@ -58,7 +73,7 @@ var Ganglion = function Ganglion() {
       }
       return new Promise(function (resolve, reject) {
         // start the impulse
-        callNextAction(actions, impulseContext, data, { resolve: resolve, reject: reject });
+        callNextAction(actions, impulseContext, data, Object.assign({ resolve: resolve, reject: reject }, options));
       }).then(function (responseData) {
         // call the onAfterImpulse handler
         if (typeof self.options.onAfterImpulse === 'function') {
