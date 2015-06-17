@@ -118,6 +118,17 @@ let nerveCentre = new Ganglion({
 });
 ```
 
+### Canceling an Impulse
+
+Any action or hook can cancel an impulse by setting `cancelImpulse = true` on the context:
+
+```JavaScript
+ganglion.fiber('buttonClicked',
+  firstAction,
+  function secondAction(data) { this.cancelImpulse = true; },
+  finalActionWontBeCalled);
+```
+
 #### onSlowAsyncActionStart / onSlowAsyncActionEnd
 
 The optional onSlowAsyncActionStart and onSlowAsyncActionEnd will be called when async actions

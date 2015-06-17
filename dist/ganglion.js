@@ -8,6 +8,13 @@ var arrayOrSingle = function arrayOrSingle(data) {
 };
 
 var callNextAction = function callNextAction(actions, context, data, options) {
+  // if the previous action or hook has set cancelImpulse=true on the context then stop
+  if (context.cancelImpulse) {
+    return options.reject({
+      message: '' + context.fiberName + ' impulse has been cancelled',
+      data: arrayOrSingle(data)
+    });
+  }
   // if there are no more actions return the final action response to the impulse caller
   if (!actions.length) {
     return options.resolve(arrayOrSingle(data));

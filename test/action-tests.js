@@ -58,4 +58,21 @@ describe('action', function () {
     });
   });
 
+  it('can cancel an impulse', function () {
+    let ganglion = new Ganglion();
+    let called = [];
+    ganglion.fiber('clicked',
+      function () { called.push(1); },
+      function () {
+        called.push(2);
+        this.cancelImpulse = true;
+      },
+      function () { called.push(3); }
+    );
+    return ganglion.impulse.clicked().catch(function (error) {
+      expect(error.message).to.equal('clicked impulse has been cancelled');
+      expect(called).to.eql([1, 2]);
+    });
+  });
+
 });
