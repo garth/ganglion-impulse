@@ -5,19 +5,19 @@ import { expect } from 'chai';
 
 describe('ganglion', function () {
 
-  it('has no impulses by default', function () {
+  it('has no fibers by default', function () {
     let ganglion = new Ganglion();
     expect(ganglion.impulse).to.be.empty;
   });
 
-  it('can add impulses', function () {
+  it('can add fibers', function () {
     var ganglion = new Ganglion();
     ganglion.fiber('clicked');
     expect(ganglion.impulse).to.not.be.empty;
     expect(ganglion.impulse.clicked).to.be.a('function');
   });
 
-  describe('impulse', function () {
+  describe('fiber', function () {
 
     it('returns a promise that has the data returned from the last action', function () {
       let ganglion = new Ganglion();
@@ -93,6 +93,31 @@ describe('ganglion', function () {
       ]);
     });
 
+    it('can define an onBeforeImpulse handler for all fibers', function () {
+      let ganglion = new Ganglion({
+        onBeforeImpulse: function (data) {
+          this.beforeCalled = true;
+        }
+      });
+      ganglion.fiber('clicked', function () { return this.beforeCalled; });
+      return ganglion.impulse.clicked().then(function (data) {
+        expect(data).to.be.true;
+      });
+    });
+
+
+    it('can define an onAfterImpulse handler for all fibers', function () {
+      let ganglion = new Ganglion({
+        onAfterImpulse: function (data) {
+          data.afterCalled = true;
+        }
+      });
+      ganglion.fiber('clicked', function () { return {}; });
+      return ganglion.impulse.clicked().then(function (data) {
+        expect(data.afterCalled).to.be.true;
+      });
+    });
+
   });
 
   describe('action', function () {
@@ -106,7 +131,7 @@ describe('ganglion', function () {
     });
 
     it('has access to injected context data', function () {
-      var ganglion = new Ganglion({ key: 'value' });
+      var ganglion = new Ganglion({ context: { key: 'value' } });
       ganglion.fiber('clicked', function () { return `context key is ${this.key}`; });
       return ganglion.impulse.clicked().then(function (name) {
         expect(name).to.equal('context key is value');
@@ -114,7 +139,7 @@ describe('ganglion', function () {
     });
 
     it('can not mutate context data for other impulses', function () {
-      var ganglion = new Ganglion({ key: 'value' });
+      var ganglion = new Ganglion({ context: { key: 'value' } });
       ganglion.fiber('clicked', function () {
         expect(this.key).to.equal('value');
         this.key = 'other';
@@ -126,7 +151,7 @@ describe('ganglion', function () {
     });
 
     it('can mutate context data for actions on the same impulse', function () {
-      var ganglion = new Ganglion({ key: 'value' });
+      var ganglion = new Ganglion({ context: { key: 'value' } });
       ganglion.fiber('clicked', function () {
         expect(this.key).to.equal('value');
         this.key = 'other';
@@ -137,7 +162,7 @@ describe('ganglion', function () {
     });
 
     it('can receive and return arrays', function () {
-      var ganglion = new Ganglion({ key: 'value' });
+      var ganglion = new Ganglion({ context: { key: 'value' } });
       ganglion.fiber('clicked', function (input) {
         expect(input).to.eql(['in']);
         return ['middle'];

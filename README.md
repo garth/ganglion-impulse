@@ -32,6 +32,8 @@ For a client-side project you can use [Browserify](http://browserify.org/) or
 Usage
 -----
 
+### Example
+
 ```JavaScript
 // es6 example, but will also work with es5.
 
@@ -50,6 +52,8 @@ nerveCentre.impulse.loginClicked({ userName, password }).then(function () {
 });
 ```
 
+### Parallel actions
+
 If actions return a Promise then ganglion will wait for them to resolve before calling the
 next action in the chain. Actions can run in parallel if passed as an array:
 
@@ -62,12 +66,16 @@ actions receive the response from the previous action. The response from the fin
 returned via a promise to the caller. When parallel actions are used, the response of both
 will be passed as an array to the next in the same order as the actions are defined.
 
+### Context Data
+
 Context information can be passed to the ganglion constructor which will then be made available
 to all actions called when an impulse is sent:
 
 ```JavaScript
 // create a new ganglion with some context data
-let nerveCentre = new Ganglion({ dataStore: {} });
+let nerveCentre = new Ganglion({
+  context: { dataStore: {} }
+});
 
 nerveCentre.fiber('userChangedName', function updateUserName(userName) {
   this.dataStore.userName = userName;
@@ -87,6 +95,26 @@ nerveCentre.fiber('eventReceived', function doStuff() {
 Context is initialised per impulse. Any mutations will be available to subsequent actions but
 will be discarded after the final action. The properties defined with original context passed
 to the ganglion constructor are retained across all impulses.
+
+### Hooks
+
+The optional onBeforeImpulse or onAfterImpulse hooks passed to the ganglion constructor will
+be called before and after every impulse emitted. Hooks have the same signature as actions, but
+the return value is discarded.
+
+```JavaScript
+// create a new ganglion with onBeforeImpulse and onAfterImpulse hooks
+let nerveCentre = new Ganglion({
+  onBeforeImpulse(data) {
+    // data will be also be passed to the first action
+    console.log(`${this.fiberName} impulse started`);
+  },
+  onAfterImpulse(data) {
+    // data is the value that was returned by the last action
+    console.log(`${this.fiberName} impulse ended`);
+  }
+});
+```
 
 Contributing
 ------------
@@ -112,6 +140,21 @@ Ganglion uses es6 and should be transpiled prior to publishing
 ```
 npm run build
 ```
+
+Changelog
+---------
+
+### 0.2.0
+
+* Added onBeforeImpulse and onAfterImpulse hooks
+
+### 0.1.1
+
+* Fixed dist build
+
+### 0.1.0
+
+* Initial release
 
 License
 -------

@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 var arrayOrSingle = function arrayOrSingle(data) {
@@ -27,14 +27,14 @@ var callNextAction = function callNextAction(actions, context, data, promise) {
     callNextAction(actions.splice(1), context, responses, promise);
   })
   // if one of the promises failed send propigate the failure
-  ["catch"](promise.reject);
+  ['catch'](promise.reject);
 };
 
 var Ganglion = function Ganglion() {
-  var context = arguments[0] === undefined ? {} : arguments[0];
+  var options = arguments[0] === undefined ? {} : arguments[0];
 
   this.impulse = {};
-  this.context = context;
+  this.options = Object.assign({ context: {} }, options);
   var self = this;
 
   this.fiber = function (name) {
@@ -43,22 +43,32 @@ var Ganglion = function Ganglion() {
     }
 
     if (self.impulse[name]) {
-      throw "" + name + " fiber has already been defined";
+      throw '' + name + ' fiber has already been defined';
     }
     self.impulse[name] = function () {
       for (var _len2 = arguments.length, data = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         data[_key2] = arguments[_key2];
       }
 
+      // make some metadata available on the context
+      var impulseContext = Object.assign({}, self.options.context, { fiberName: name });
+      // call the onBeforeImpulse handler
+      if (typeof self.options.onBeforeImpulse === 'function') {
+        self.options.onBeforeImpulse.call(impulseContext, data);
+      }
       return new Promise(function (resolve, reject) {
-        // make some metadata available on the context
-        var impulseContext = Object.assign({}, self.context, { fiberName: name });
         // start the impulse
         callNextAction(actions, impulseContext, data, { resolve: resolve, reject: reject });
+      }).then(function (responseData) {
+        // call the onAfterImpulse handler
+        if (typeof self.options.onAfterImpulse === 'function') {
+          self.options.onAfterImpulse.call(impulseContext, responseData);
+        }
+        return responseData;
       });
     };
   };
 };
 
-exports["default"] = Ganglion;
-module.exports = exports["default"];
+exports['default'] = Ganglion;
+module.exports = exports['default'];
