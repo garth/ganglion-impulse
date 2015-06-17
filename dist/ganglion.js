@@ -3,10 +3,14 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var arrayOrSingle = function arrayOrSingle(data) {
+  return Array.isArray(data) && data.length === 1 ? data[0] : data;
+};
+
 var callNextAction = function callNextAction(actions, context, data, promise) {
   // if there are no more actions return the final action response to the impulse caller
   if (!actions.length) {
-    return promise.resolve(Array.isArray(data) && data.length === 1 ? data[0] : data);
+    return promise.resolve(arrayOrSingle(data));
   }
 
   // assume all actions are concurrent sets
@@ -16,7 +20,7 @@ var callNextAction = function callNextAction(actions, context, data, promise) {
   Promise
   // wait for all responses to resolve before calling the next action
   .all(actionSet.map(function (action) {
-    return action.call(context, Array.isArray(data) && data.length === 1 ? data[0] : data);
+    return action.call(context, arrayOrSingle(data));
   }))
   // all actions resolved, so call next
   .then(function (responses) {
@@ -39,7 +43,7 @@ var Ganglion = function Ganglion() {
     }
 
     if (self.impulse[name]) {
-      throw "" + name + " impulse has already been defined";
+      throw "" + name + " fiber has already been defined";
     }
     self.impulse[name] = function () {
       for (var _len2 = arguments.length, data = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
