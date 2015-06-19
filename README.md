@@ -117,31 +117,56 @@ Context is initialised per impulse. Any mutations will be available to subsequen
 will be discarded after the final action. The properties defined with original context passed
 to the ganglion constructor are retained across all impulses.
 
-### Hooks
+### Events
 
-#### onBeforeImpulse / onAfterImpulse
+#### beforeImpulse and afterImpulse
 
-The optional onBeforeImpulse or onAfterImpulse hooks passed to the ganglion constructor will
-be called before and after every impulse emitted. Hooks have the same signature as actions, but
-the return value is discarded.
+`beforeImpulse` and `afterImpulse` events are fired by the ganglion before and after every
+impulse emitted. Handlers have the same signature as actions, but the return value is
+discarded.
 
 ```JavaScript
-// create a new ganglion with onBeforeImpulse and onAfterImpulse hooks
-let ganglion = new Ganglion({
-  onBeforeImpulse(data) {
-    // data will be also be passed to the first action
-    console.log(`${this.fiberName} impulse started`);
-  },
-  onAfterImpulse(data) {
-    // data is the value that was returned by the last action
-    console.log(`${this.fiberName} impulse ended`);
-  }
+let ganglion = new Ganglion();
+
+// add beforeImpulse and afterImpulse event handlers
+ganglion.on('beforeImpulse', function (data) {
+  // data will be also be passed to the first action
+  console.log(`${this.fiberName} impulse started`);
+});
+ganglion.on('afterImpulse', function (data) {
+  // data is the value that was returned by the last action
+  console.log(`${this.fiberName} impulse ended`);
 });
 ```
 
+#### slowAsyncActionStart and slowAsyncActionEnd
+
+`slowAsyncActionStart` and `slowAsyncActionEnd` events are fired by the ganglion when
+async actions take a while to complete.
+
+```JavaScript
+let slowActionHandler = function (isStart) {
+  let status = isStart ? 'is running slow' : 'completed';
+  console.log(`${this.fiberName} async action ${status}`);
+};
+
+let ganglion = new Ganglion({
+  callSlowAsyncActionAfter: 500, // ms after which the
+                                 // onSlowAsyncActionStart will be called
+});
+
+// add slowAsyncActionStart and slowAsyncActionEnd event handlers
+ganglion.on('slowAsyncActionStart', slowActionHandler);
+ganglion.on('slowAsyncActionEnd', slowActionHandler);
+```
+
+To ensure that the slow async action events are not triggered unnecessarily,
+`callSlowAsyncActionAfter` can be used to define after how many milliseconds should be hooks
+be called. By default this is set to 500ms.
+
 ### Canceling an Impulse
 
-Any action or hook can cancel an impulse by setting `cancelImpulse = true` on the context:
+Any action or event handler can cancel an impulse by setting `cancelImpulse = true` on the context:
 
 ```JavaScript
 ganglion.fiber('buttonClicked',
@@ -149,30 +174,6 @@ ganglion.fiber('buttonClicked',
   function secondAction(data) { this.cancelImpulse = true; },
   finalActionWontBeCalled);
 ```
-
-#### onSlowAsyncActionStart / onSlowAsyncActionEnd
-
-The optional onSlowAsyncActionStart and onSlowAsyncActionEnd will be called when async actions
-take a while to complete.
-
-```JavaScript
-let slowActionHook = function (isStart) {
-  let status = isStart ? 'is running slow' : 'completed';
-  console.log(`${this.fiberName} async action ${status}`);
-};
-
-// create a new ganglion with onSlowAsyncActionStart and onSlowAsyncActionEnd hooks
-let ganglion = new Ganglion({
-  callSlowAsyncActionAfter: 500, // ms after which the
-                                 // onSlowAsyncActionStart will be called
-  onSlowAsyncActionStart: slowActionHook,
-  onSlowAsyncActionEnd: slowActionHook
-});
-```
-
-To ensure that the slow async action hooks are not called unnecessarily, `callSlowAsyncActionAfter`
-can be used to define after how many milliseconds should be hooks be called. By default this is
-set to 500ms.
 
 Contributing
 ------------
@@ -199,13 +200,14 @@ Ganglion uses es6 and should be transpiled prior to publishing
 npm run build
 ```
 
-Changelog
----------
+Change Log
+----------
 
-### master
+### 0.4.0
 
 * Added `debug = true` option to log out impulses to the console
 * Allow alternative spelling of fiber/fibre
+* [Breaking Change] Changed hooks to events
 
 ### 0.3.1
 

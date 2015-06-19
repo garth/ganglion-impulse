@@ -5,11 +5,10 @@ import { expect } from 'chai';
 
 describe('hooks', function () {
 
-  it('onBeforeImpulse hook is called for all fibers', function () {
-    let ganglion = new Ganglion({
-      onBeforeImpulse(data) {
-        this.beforeCalled = true;
-      }
+  it('beforeImpulse event is triggered for all fibers', function () {
+    let ganglion = new Ganglion();
+    ganglion.on('beforeImpulse', function (data) {
+      this.beforeCalled = true;
     });
     ganglion.fiber('clicked', function () { return this.beforeCalled; });
     return ganglion.impulse.clicked().then(function (data) {
@@ -17,12 +16,10 @@ describe('hooks', function () {
     });
   });
 
-
-  it('onAfterImpulse hook is called for all fibers', function () {
-    let ganglion = new Ganglion({
-      onAfterImpulse(data) {
-        data.afterCalled = true;
-      }
+  it('afterImpulse event is triggered for all fibers', function () {
+    let ganglion = new Ganglion();
+    ganglion.on('afterImpulse', function (data) {
+      data.afterCalled = true;
     });
     ganglion.fiber('clicked', function () { return {}; });
     return ganglion.impulse.clicked().then(function (data) {
@@ -30,17 +27,17 @@ describe('hooks', function () {
     });
   });
 
-  it('onSlowAsyncActionStart/onSlowAsyncActionEnd are not called for quick async actions', function () {
+  it('slowAsyncActionStart/slowAsyncActionEnd are not triggered for quick async actions', function () {
     let calledStart = false;
     let calledEnd = false;
     let ganglion = new Ganglion({
-      callSlowAsyncActionAfter: 20,
-      onSlowAsyncActionStart(isStarting) {
-        calledStart = true;
-      },
-      onSlowAsyncActionEnd(isStarting) {
-        calledEnd = true;
-      }
+      callSlowAsyncActionAfter: 20
+    });
+    ganglion.on('slowAsyncActionStart', function (isStarting) {
+      calledStart = true;
+    });
+    ganglion.on('slowAsyncActionEnd', function (isStarting) {
+      calledEnd = true;
     });
     ganglion.fiber('clicked', function () {
       return new Promise(function (resolve) { setTimeout(resolve, 10); });
@@ -51,19 +48,19 @@ describe('hooks', function () {
     });
   });
 
-  it('onSlowAsyncActionStart/onSlowAsyncActionEnd are called for slow actions', function () {
+  it('slowAsyncActionStart/slowAsyncActionEnd are triggered for slow actions', function () {
     let calledStart = false;
     let calledEnd = false;
     let ganglion = new Ganglion({
-      callSlowAsyncActionAfter: 10,
-      onSlowAsyncActionStart(isStarting) {
-        expect(isStarting).to.be.true;
-        calledStart = true;
-      },
-      onSlowAsyncActionEnd(isStarting) {
-        expect(isStarting).to.be.false;
-        calledEnd = true;
-      }
+      callSlowAsyncActionAfter: 10
+    });
+    ganglion.on('slowAsyncActionStart', function (isStarting) {
+      expect(isStarting).to.be.true;
+      calledStart = true;
+    });
+    ganglion.on('slowAsyncActionEnd', function (isStarting) {
+      expect(isStarting).to.be.false;
+      calledEnd = true;
     });
     ganglion.fiber('clicked', function () {
       return new Promise(function (resolve) { setTimeout(resolve, 12); });
