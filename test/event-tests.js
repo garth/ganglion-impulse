@@ -3,7 +3,25 @@
 import Ganglion from '../lib/ganglion';
 import { expect } from 'chai';
 
-describe('hooks', function () {
+describe('event', function () {
+
+  it('error event is triggered on rejected promise', function () {
+    let errorCalled = false;
+    let ganglion = new Ganglion();
+    ganglion.on('error', function (error) {
+      errorCalled = true;
+      expect(error).to.equal('error');
+    });
+    ganglion.fiber('clicked', function () {
+      return new Promise(function (resolve, reject) {
+        reject('error');
+      });
+    });
+    return ganglion.impulse.clicked().catch(function (error) {
+      expect(error).to.equal('error');
+      expect(errorCalled).to.be.true;
+    });
+  });
 
   it('beforeImpulse event is triggered for all fibers', function () {
     let ganglion = new Ganglion();

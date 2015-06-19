@@ -106,6 +106,8 @@ var Ganglion = function Ganglion() {
         trigger('afterImpulse', impulseContext, responseData);
         return responseData;
       })['catch'](function (responseData) {
+        // emit the afterImpulse event
+        trigger('error', impulseContext, responseData);
         return responseData;
       });
     };
