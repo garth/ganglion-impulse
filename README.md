@@ -202,6 +202,10 @@ npm run build
 Changelog
 ---------
 
+### master
+
+* Added `debug = true` option to log out impulses to the console
+
 ### 0.3.1
 
 * Improved the documentation
