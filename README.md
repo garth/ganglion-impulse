@@ -220,6 +220,7 @@ Change Log
 
 * Emit error events
 * Removed debug code which can now be acheived with events
+* Added more tests
 
 ### 0.4.0
 

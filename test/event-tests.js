@@ -5,6 +5,32 @@ import { expect } from 'chai';
 
 describe('event', function () {
 
+  it('has access to the fiber name', function () {
+    var eventCalled = false;
+    var ganglion = new Ganglion();
+    ganglion.on('beforeImpulse', function () {
+      eventCalled = true;
+      expect(this.fiberName).to.equal('clicked');
+    });
+    ganglion.fiber('clicked');
+    return ganglion.impulse.clicked().then(function () {
+      expect(eventCalled).to.be.true;
+    });
+  });
+
+  it('has access to injected context data', function () {
+    var eventCalled = false;
+    var ganglion = new Ganglion({ context: { test: 'value' } });
+    ganglion.on('beforeImpulse', function () {
+      eventCalled = true;
+      expect(this.test).to.equal('value');
+    });
+    ganglion.fiber('clicked');
+    return ganglion.impulse.clicked().then(function () {
+      expect(eventCalled).to.be.true;
+    });
+  });
+
   it('error event is triggered on rejected promise', function () {
     let errorCalled = false;
     let ganglion = new Ganglion();
