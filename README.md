@@ -205,6 +205,7 @@ Changelog
 ### master
 
 * Added `debug = true` option to log out impulses to the console
+* Allow alternative spelling of fiber/fibre
 
 ### 0.3.1
 

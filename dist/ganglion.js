@@ -11,7 +11,7 @@ var callNextAction = function callNextAction(actions, context, data, options) {
   // if the previous action or hook has set cancelImpulse=true on the context then stop
   if (context.cancelImpulse) {
     return options.reject({
-      message: '' + context.fiberName + ' impulse has been cancelled',
+      message: '' + context.fibreName + ' impulse has been cancelled',
       data: arrayOrSingle(data)
     });
   }
@@ -59,13 +59,13 @@ var Ganglion = function Ganglion() {
   this.options = Object.assign({ context: {}, callSlowAsyncActionAfter: 500 }, options);
   var self = this;
 
-  this.fiber = function (name) {
+  this.fibre = this.fiber = function (name) {
     for (var _len = arguments.length, actions = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       actions[_key - 1] = arguments[_key];
     }
 
     if (self.impulse[name]) {
-      throw '' + name + ' fiber has already been defined';
+      throw '' + name + ' fibre has already been defined';
     }
     self.impulse[name] = function () {
       for (var _len2 = arguments.length, data = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -76,7 +76,7 @@ var Ganglion = function Ganglion() {
         console.debug('ganglion-impulse ' + name + ' started', data);
       }
       // make some metadata available on the context
-      var impulseContext = Object.assign({}, self.options.context, { fiberName: name });
+      var impulseContext = Object.assign({}, self.options.context, { fiberName: name, fibreName: name });
       // call the onBeforeImpulse handler
       if (typeof self.options.onBeforeImpulse === 'function') {
         self.options.onBeforeImpulse.call(impulseContext, data);
