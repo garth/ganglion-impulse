@@ -94,9 +94,6 @@ var Ganglion = function Ganglion() {
         data[_key3] = arguments[_key3];
       }
 
-      if (options.debug) {
-        console.debug('ganglion-impulse ' + name + ' started', data);
-      }
       // make some metadata available on the context
       var impulseContext = Object.assign({}, self.options.context, { fiberName: name, fibreName: name });
       // emit the beforeImpulse event
@@ -107,14 +104,8 @@ var Ganglion = function Ganglion() {
       }).then(function (responseData) {
         // emit the afterImpulse event
         trigger('afterImpulse', impulseContext, responseData);
-        if (options.debug) {
-          console.debug('ganglion-impulse ' + name + ' ended', responseData);
-        }
         return responseData;
       })['catch'](function (responseData) {
-        if (options.debug) {
-          console.debug('ganglion-impulse ' + name + ' failed', responseData);
-        }
         return responseData;
       });
     };

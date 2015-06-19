@@ -203,9 +203,12 @@ npm run build
 Change Log
 ----------
 
+### 0.4.1
+
+* Removed debug code which can now be acheived with events
+
 ### 0.4.0
 
-* Added `debug = true` option to log out impulses to the console
 * Allow alternative spelling of fiber/fibre
 * [Breaking Change] Changed hooks to events
 
