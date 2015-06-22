@@ -164,6 +164,19 @@ To ensure that the slow async action events are not triggered unnecessarily,
 `callSlowAsyncActionAfter` can be used to define after how many milliseconds should be hooks
 be called. By default this is set to 500ms.
 
+#### error
+
+`error` events are fired when async actions reject their promise.
+
+```JavaScript
+let ganglion = new Ganglion();
+
+// add error event handlers
+ganglion.on('error', function (error) {
+  console.error(`${this.fiberName} returned an error`, error);
+});
+```
+
 ### Canceling an Impulse
 
 Any action or event handler can cancel an impulse by setting `cancelImpulse = true` on the context:
@@ -203,9 +216,14 @@ npm run build
 Change Log
 ----------
 
+### 0.4.1
+
+* Emit error events
+* Removed debug code which can now be acheived with events
+* Added more tests
+
 ### 0.4.0
 
-* Added `debug = true` option to log out impulses to the console
 * Allow alternative spelling of fiber/fibre
 * [Breaking Change] Changed hooks to events
 

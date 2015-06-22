@@ -3,7 +3,51 @@
 import Ganglion from '../lib/ganglion';
 import { expect } from 'chai';
 
-describe('hooks', function () {
+describe('event', function () {
+
+  it('has access to the fiber name', function () {
+    var eventCalled = false;
+    var ganglion = new Ganglion();
+    ganglion.on('beforeImpulse', function () {
+      eventCalled = true;
+      expect(this.fiberName).to.equal('clicked');
+    });
+    ganglion.fiber('clicked');
+    return ganglion.impulse.clicked().then(function () {
+      expect(eventCalled).to.be.true;
+    });
+  });
+
+  it('has access to injected context data', function () {
+    var eventCalled = false;
+    var ganglion = new Ganglion({ context: { test: 'value' } });
+    ganglion.on('beforeImpulse', function () {
+      eventCalled = true;
+      expect(this.test).to.equal('value');
+    });
+    ganglion.fiber('clicked');
+    return ganglion.impulse.clicked().then(function () {
+      expect(eventCalled).to.be.true;
+    });
+  });
+
+  it('error event is triggered on rejected promise', function () {
+    let errorCalled = false;
+    let ganglion = new Ganglion();
+    ganglion.on('error', function (error) {
+      errorCalled = true;
+      expect(error).to.equal('error');
+    });
+    ganglion.fiber('clicked', function () {
+      return new Promise(function (resolve, reject) {
+        reject('error');
+      });
+    });
+    return ganglion.impulse.clicked().catch(function (error) {
+      expect(error).to.equal('error');
+      expect(errorCalled).to.be.true;
+    });
+  });
 
   it('beforeImpulse event is triggered for all fibers', function () {
     let ganglion = new Ganglion();
