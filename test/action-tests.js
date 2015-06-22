@@ -21,6 +21,15 @@ describe('action', function () {
     });
   });
 
+  it('has access to context data added via addToContext', function () {
+    var ganglion = new Ganglion({ context: { key: 'value' } });
+    ganglion.addToContext({ key2: 'newValue' });
+    ganglion.fiber('clicked', function () { return `context key2 is ${this.key2}`; });
+    return ganglion.impulse.clicked().then(function (name) {
+      expect(name).to.equal('context key2 is newValue');
+    });
+  });
+
   it('can not mutate context data for other impulses', function () {
     var ganglion = new Ganglion({ context: { key: 'value' } });
     ganglion.fiber('clicked', function () {

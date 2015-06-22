@@ -11,7 +11,7 @@ Ganglion is heavily inspired by [Cerebral](https://github.com/christianalfoni/ce
 but does not include a data store or any [React](http://facebook.github.io/react/) component
 integration as Cerebral does.
 
-Ganglion is small (< 1k minimised and gzipped) and it does not have any dependencies.
+Ganglion is small (~1k minimised and gzipped) and it does not have any dependencies.
 
 Why Use Ganglion
 ----------------
@@ -117,6 +117,27 @@ Context is initialised per impulse. Any mutations will be available to subsequen
 will be discarded after the final action. The properties defined with original context passed
 to the ganglion constructor are retained across all impulses.
 
+To make changes to the context after the ganglion is initialised you can use the `addToContext`
+method:
+
+```JavaScript
+// create a new ganglion with some context data
+let ganglion = new Ganglion({
+  context: { dataStore: {} }
+});
+
+// add log method to the ganglion
+ganglion.addToContext({
+  log: logMethod
+});
+
+ganglion.fiber('userChangedName', function updateUserName(userName) {
+  this.log(`The user changed their name to ${userName}`);
+});
+```
+
+Any existing values with the same key will be overwritten.
+
 ### Events
 
 #### beforeImpulse and afterImpulse
@@ -216,35 +237,39 @@ npm run build
 Change Log
 ----------
 
-### 0.4.1
+0.4.2
+
+* Added addToContext method
+
+0.4.1
 
 * Emit error events
 * Removed debug code which can now be acheived with events
 * Added more tests
 
-### 0.4.0
+0.4.0
 
 * Allow alternative spelling of fiber/fibre
 * [Breaking Change] Changed hooks to events
 
-### 0.3.1
+0.3.1
 
 * Improved the documentation
 * Added the ability for any action or hook to cancel an impulse
 
-### 0.3.0
+0.3.0
 
 * Added onSlowAsyncActionStart and onSlowAsyncActionEnd hooks
 
-### 0.2.0
+0.2.0
 
 * Added onBeforeImpulse and onAfterImpulse hooks
 
-### 0.1.1
+0.1.1
 
 * Fixed dist build
 
-### 0.1.0
+0.1.0
 
 * Initial release
 

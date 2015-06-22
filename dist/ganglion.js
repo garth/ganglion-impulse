@@ -62,12 +62,14 @@ var Ganglion = function Ganglion() {
     events[event] = events[event] || [];
     events[event].push(handler);
   };
+
   this.off = function (event, handler) {
     if (event in events === false) {
       return;
     }
     events[event].splice(events[event].indexOf(handler), 1);
   };
+
   var trigger = function trigger(event, context) {
     for (var _len = arguments.length, args = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
       args[_key - 2] = arguments[_key];
@@ -111,6 +113,13 @@ var Ganglion = function Ganglion() {
         return responseData;
       });
     };
+  };
+
+  this.addToContext = function (context) {
+    if (typeof context !== 'object') {
+      throw 'context data must be an object';
+    }
+    this.options.context = Object.assign(this.options.context, context);
   };
 };
 
